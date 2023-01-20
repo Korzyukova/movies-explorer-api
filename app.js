@@ -4,12 +4,22 @@ const mongoose = require('mongoose');
 
 require('dotenv').config();
 
+const routes = require('./routes');
+
+const { requestLogger, errorLogger} = require('./middlewares/logger');
+const { errorHandler } = require('./middlewares/errorHandlers');
+
 
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+app.use(requestLogger);
+app.use(routes);
 
+app.use(errorLogger);
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
