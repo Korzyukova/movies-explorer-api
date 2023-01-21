@@ -23,5 +23,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
-
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb');
+const mongoURI = process.env.MONGO_DB_URI || 'mongodb://localhost:27017/bitfilmsdb'
+mongoose.connect(mongoURI);
