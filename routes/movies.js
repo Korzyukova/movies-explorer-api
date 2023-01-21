@@ -1,11 +1,10 @@
 const router = require('express').Router();
 const auth = require('../middlewares/auth');
 
-
 const {
   getMovies,
   createMovie,
-  deleteMovie
+  deleteMovie,
 } = require('../controllers/movies');
 
 router.get('/movies', auth, getMovies);
