@@ -33,7 +33,6 @@ router.post('/movies', auth, celebrate({
         /https?/,
       ],
     }),
-    owner: Joi.string().required().min(2).max(50),
     movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
