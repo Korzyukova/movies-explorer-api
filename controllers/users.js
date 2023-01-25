@@ -5,12 +5,11 @@ const User = require('../models/users');
 
 const {
   AuthorizationError401,
-  ConflictError11000,
   WrongDataError400,
 } = require('../middlewares/errorHandlers');
 
 const errorMsg401 = 'Authorization error';
-const errorMsg400 = 'Wrong data while creating user';
+const errorMsg400 = 'Wrong data while updating user';
 const errorMsg11000 = 'This email already exists';
 
 const secret = process.env.JWT_SECRET || 'secret-key';
@@ -20,7 +19,12 @@ module.exports.getUser = (req, res, next) => {
     _id: req.user._id,
   })
     .then((users) => {
-      res.send({ data: users });
+      res.send({
+        data: {
+          email: users[0].email,
+          name: users[0].name,
+        },
+      });
     })
     .catch(next);
 };
@@ -77,17 +81,22 @@ module.exports.signup = async (req, res, next) => {
     password: hash,
   }).catch((err) => {
     if (err.code === 11000) {
-      next(new ConflictError11000(errorMsg11000));
+      res.status(11000).send(errorMsg11000);
     } else if (err.name === 'ValidationError') {
-      next(new WrongDataError400(`${Object.values(err.errors).map((error) => error.message).join(', ')}`));
+      res.status(400).send('USERNAME AND PASSWORD REQUIRED');
     } else {
       next(err);
     }
   });
-  res.send({ data: user });
+  res.send({
+    data: {
+      email: user.email,
+      name: user.name,
+    },
+  });
 };
-const jwtBlackList = [];
+
 module.exports.signout = async (req, res) => {
-  jwtBlackList.push(req.user.token);
+  res.clearCookie();
   res.send('You are logged out');
 };

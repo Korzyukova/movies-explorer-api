@@ -13,10 +13,10 @@ router.get('/movies', auth, getMovies);
 
 router.post('/movies', auth, celebrate({
   body: Joi.object().keys({
-    country: Joi.string().required().min(2).max(30),
-    director: Joi.string().required().min(2).max(50),
+    country: Joi.string().required(),
+    director: Joi.string().required(),
     duration: Joi.number().required(),
-    year: Joi.string().required().min(4).max(4),
+    year: Joi.string().required(),
     description: Joi.string().required(),
     image: Joi.string().required().uri({
       scheme: [
@@ -39,6 +39,10 @@ router.post('/movies', auth, celebrate({
   }),
 }), createMovie);
 
-router.delete('/movies/:_id', auth, deleteMovie);
+router.delete('/movies/:movieId', auth, celebrate({
+  params: Joi.object().keys({
+    movieId: Joi.string().required(),
+  }),
+}), deleteMovie);
 
 module.exports = router;
