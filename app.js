@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json());
 
 app.use(requestLogger);
-app.use(routes);
+app.use('/api', routes);
 app.all('*', auth, () => {
   throw new NotFoundError404('Not found.');
 });
