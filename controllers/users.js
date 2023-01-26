@@ -6,11 +6,12 @@ const User = require('../models/users');
 const {
   AuthorizationError401,
   WrongDataError400,
+  UserExistsError409,
 } = require('../middlewares/errorHandlers');
 
 const errorMsg401 = 'Authorization error';
-const errorMsg400 = 'Wrong data while updating user';
-const errorMsg11000 = 'This email already exists';
+const errorMsg400 = 'Incorrect input data';
+const errorMsg409 = 'This user already exists';
 
 const secret = process.env.JWT_SECRET || 'secret-key';
 
@@ -41,7 +42,9 @@ module.exports.updateUser = (req, res, next) => {
   })
     .then(() => res.send(update))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.code === 11000) {
+        next(new UserExistsError409(errorMsg409));
+      } else if (err.name === 'ValidationError') {
         next(new WrongDataError400(errorMsg400));
       } else {
         next(err);
@@ -81,9 +84,9 @@ module.exports.signup = async (req, res, next) => {
     password: hash,
   }).catch((err) => {
     if (err.code === 11000) {
-      res.status(11000).send(errorMsg11000);
+      next(new UserExistsError409(errorMsg409));
     } else if (err.name === 'ValidationError') {
-      res.status(400).send('USERNAME AND PASSWORD REQUIRED');
+      next(new WrongDataError400(errorMsg400));
     } else {
       next(err);
     }

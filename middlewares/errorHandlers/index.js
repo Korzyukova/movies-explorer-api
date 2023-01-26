@@ -6,9 +6,9 @@ const NotFoundError404 = require('./notFoundError404');
 const UserExistsError409 = require('./userExistsError409');
 const ConflictError11000 = require('./conflictError11000');
 
-const errorHandler = (err, req, res) => {
+const errorHandler = (err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
+  res.status(statusCode).json({
     message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
   });
 };

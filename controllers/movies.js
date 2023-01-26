@@ -2,12 +2,16 @@ const Movie = require('../models/movies');
 
 const {
   WrongDataError400,
+  NotFoundError404,
 } = require('../middlewares/errorHandlers');
 
 const errorMsg400 = 'Wrong input data while creating movie';
+const errorMsg404 = 'No movies found';
 
 module.exports.getMovies = (req, res, next) => {
-  Movie.find()
+  Movie.find({
+    owner: req.user._id,
+  })
     .then((movies) => {
       res.send({ data: movies });
     })
@@ -59,8 +63,17 @@ module.exports.deleteMovie = (req, res, next) => {
     _id: movieId,
     owner: userId,
   })
-    .then(() => {
-      res.send({ data: true });
+    .then((data) => {
+      if (data.deletedCount === 0) {
+        throw new NotFoundError404(errorMsg404);
+      }
+      res.json({ data: true });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new NotFoundError404(errorMsg404));
+      } else {
+        next(err);
+      }
+    });
 };
